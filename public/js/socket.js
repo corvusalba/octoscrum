@@ -1,7 +1,7 @@
-var connection = null;
+var Socket = function(endpoint) {
+    var self = this;
 
-$(function () {
-    connection = new WebSocket('ws://localhost:4568/');
+    self.connection = null;
 
     connection.onopen = function () {
         console.log("Opened.");
@@ -15,9 +15,21 @@ $(function () {
         console.log("Error: " + error);
     };
 
-    connection.onmessage = function(e){
-        console.log(e.data);
-        var event = JSON.parse(e.data);
-        itemsViewModel.handle(event);
+    connection.onmessage = function(e) {
+        EventModel.handle(JSON.parse(e.data));
     };
+
+    return {
+        init: function(endpoint) {
+            self.connection = new WebSocket(endpoint);
+        },
+
+        send: function(event) {
+            self.connection.send(JSON.stringify(event));
+        }
+    };
+}();
+
+$(function() {
+    Socket.init('http://localhost:8081/');
 });

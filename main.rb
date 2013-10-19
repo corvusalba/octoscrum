@@ -26,7 +26,6 @@ def run(options)
     port = options[:port] || '8080'
     wsport = options[:wsport] || '8081'
     web_app = options[:app]
-    ws_handler = options[:handler]
 
     dispatch = Rack::Builder.app do
                               map '/' do
@@ -41,12 +40,15 @@ def run(options)
                       Port: port
                       })
 
-    EM::WebSocket.run(:host => host, :port => wsport) do |ws|
-      ws.onopen { |handshake| ws_handler.onopen(ws, handshake) }
-      ws.onclose { ws_handler.onclose(ws) }
-      ws.onmessage { |msg| ws_handler.onmessage(ws, msg) }
+    EM::WebSocket.run(:host => host, :port => wsport) do |socket|
+      context = SocketContext.new(socket)
+      socket.onopen do |handshake|
+        context.open(handshake)
+      end
+      socket.onclose { context.close }
+      socket.onmessage { |msg| context.message(msg) }
     end
   end
 end
 
-run app: WebController.new, handler: WebSocketHandler.new
+run app: WebController.new
