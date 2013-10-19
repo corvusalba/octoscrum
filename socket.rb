@@ -1,20 +1,34 @@
 require 'eventmachine'
 require 'em-websocket'
+require './eventmodel.rb'
 
-class WebSocketHandler
-  def onopen(ws, handshake)
-    ws.send "Hello Client!"
+class SocketContext
+  def initialize(socket)
+    @socket = socket
+    @screenType = nil
+    @screenId = nil
   end
 
-  def onclose(ws)
-    puts "ws closed"
+  def open(handshake)
   end
 
-  def persist(event)
-
+  def close()
   end
 
-  def onmessage(ws, msg)
-    ws.send "Pong: #{msg}"
+  def send(event)
+    @socket.send event.serialize
+  end
+
+  def message(msg)
+    event = EventModel::Event.parse(msg)
+    if event.eventType == 'subscribe'
+      @screenType = event.screenType
+      @screenId = event.screenId
+      EventModel.subscribe(@screenType, @screenId) do |event|
+        self.send event
+      end
+    else
+      EventModel.raise(event)
+    end
   end
 end
