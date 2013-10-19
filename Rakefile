@@ -13,6 +13,5 @@ end
 
 task :start do
   conf = File.expand_path('config.ru', File.dirname(__FILE__))
-  thinconf = File.expand_path('config/thinconfig.yml', File.dirname(__FILE__))
-  `thin -e development -C #{thinconf} -R #{conf} -p 8080 --debug start`
+  `thin -e development -R #{conf} -p 8080 --debug start`
 end
