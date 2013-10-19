@@ -8,16 +8,30 @@ class WebController < Sinatra::Base
   configure do
     set :threaded, false
     set :public_folder, 'public'
-    #enable :sessions
-    use Rack::Session::Cookie, :key => 'rack.session',
-                           :domain => 'localhost',
-                           :path => '/',
-                           :expire_after => 2592000, # In seconds
-                           :secret => 'qwerty'
 
-    #use Rack::Session::Cookie
-    use OmniAuth::Builder do
-      provider :github, '6766f10878e0bb685723', '12f1f586e119c7ca275654300674f73d599cc6ed'
+    if (ENV['RACK_ENV'] == 'production')
+      use Rack::Session::Cookie, :key => 'rack.session',
+      :domain => 'corvus-alba.r13.railsrumble.com',
+      :path => '/',
+      :expire_after => 2592000, # In seconds
+      :secret => 'qwerty'
+
+      use OmniAuth::Builder do
+        provider :github, '834f0982eebc5b9044a7', '19c3325963b8b3fff96f2df24f0070aed0b0540e'
+      end
+
+    end
+
+    if (ENV['RACK_ENV'] == 'development')
+      use Rack::Session::Cookie, :key => 'rack.session',
+        :domain => 'localhost',
+        :path => '/',
+        :expire_after => 2592000, # In seconds
+        :secret => 'qwerty'
+
+      use OmniAuth::Builder do
+        provider :github, '6766f10878e0bb685723', '12f1f586e119c7ca275654300674f73d599cc6ed'
+      end
     end
   end
 
@@ -34,6 +48,8 @@ class WebController < Sinatra::Base
   end
 
   get '/' do
+
+
     if authenticated?
       erb :main
     else
