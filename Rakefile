@@ -8,7 +8,7 @@ end
 task :default => [:bundler] do
   conf = File.expand_path('config.ru', File.dirname(__FILE__))
   thinconf = File.expand_path('config/thinconfig.yml', File.dirname(__FILE__))
-  `thin -C #{thinconf} -R #{conf} -p 8080 start -d`
+  `thin -C #{thinconf} -R #{conf} -p 8080 restart -d`
 end
 
 task :start do
