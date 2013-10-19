@@ -5,14 +5,19 @@ require 'eventmachine'
 require 'em-websocket'
 
 configure do
-  set :views, ['views/layouts', 'views/pages', 'views/partials']
-  #enable :sessions
+  #set :views, ['views/layouts', 'views/pages', 'views/partials']
+  # sets root as the parent-directory of the current file
+  set :root, File.join(File.dirname(__FILE__), '..')
+  # sets the view directory correctly
+  set :views, Proc.new { File.join(root, "views") }
 end
 
-Dir["./app/models/*.rb"].each { |file| require file }
-Dir["./app/helpers/*.rb"].each { |file| require file }
-Dir["./app/controllers/*.rb"].each { |file| require file }
-Dir["./app/*.rb"].each { |file| require file }
+#Dir["./app/models/*.rb"].each { |file| require file }
+#Dir["./app/helpers/*.rb"].each { |file| require file }
+#Dir["./app/controllers/*.rb"].each { |file| require file }
+#Dir["./app/*.rb"].each { |file| require file }
+require './web.rb'
+require './socket.rb'
 
 def run(options)
   EM.run do
