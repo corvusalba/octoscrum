@@ -87,4 +87,8 @@ class WebController < Sinatra::Base
   get '/planning' do
     erb :planning
   end
+
+  get '/token' do
+    erb :main
+  end
 end
