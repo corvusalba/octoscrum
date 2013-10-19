@@ -4,8 +4,9 @@
   
   <head>
     <title>Git Scrumboard</title>
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/site.css">
     <script src="js/jquery.min.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
@@ -37,12 +38,7 @@
         color: #777;
         border-top: 1px solid #e5e5e5;
       }
-      /* Customize container */
-      @media(min-width: 768px) {
-        .container {
-          max-width: 730px;
-        }
-      }
+
       .container-narrow > hr {
         margin: 30px 0;
       }
@@ -80,34 +76,27 @@
       }
     </style>
   </head>
-  
+
   <body>
-    <div class="container">
-      <nav class="navbar navbar-default">
-        <div class="container">
-          <div class="navbar-header">
-            <a href="#" class="navbar-brand">Corvus Alba</a>
-
-            <ul class="nav navbar-nav pull-left">
-              <li class="active">
-                <a href="#">Home</a>
-              </li>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-11">
+            <ol class="breadcrumb">
               <li>
-                <a href="#">About</a>
+                <a href="https://github.com/<%= session[:nickname] %>">
+                  <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
+                  <%= session[:nickname]%>
+                </a>
               </li>
-              <li>
-                <a href="#">Contact</a>
-              </li>
-            </ul>
-
-
+              <%= yield_content :breadcrumbs %>
+            </ol>
           </div>
-          <% if session[:authenticated] %>
-              <p class="navbar-text pull-right">Welcome, <a href="#" class="navbar-link"><%= session[:username] %>!</a></p>
-          <% end %>
+          <div class="col-md-1">
+            <% if session[:authenticated] %>
+              <a href="/auth/signout" class="btn btn-default">Sign Out</a>
+            <% end %>
+          </div>
         </div>
-      </nav>
-
         <%= yield %>
 
         <div class="footer">
@@ -116,8 +105,8 @@
             &copy; Company 2013
           </p>
         </div>
-    </div>
-    <!-- /container -->
+      </div>
+  <!-- /container -->
   </body>
 
 </html>

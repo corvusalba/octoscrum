@@ -1,9 +1,12 @@
 require 'sinatra'
 require 'sinatra/base'
+require 'sinatra/content_for'
 require 'omniauth'
 require 'omniauth-github'
 
 class WebController < Sinatra::Base
+
+  helpers Sinatra::ContentFor
 
   configure do
     set :threaded, false
@@ -48,10 +51,8 @@ class WebController < Sinatra::Base
   end
 
   get '/' do
-
-
     if authenticated?
-      erb :main
+      erb :projects
     else
       erb :index
     end
@@ -63,9 +64,10 @@ class WebController < Sinatra::Base
     session[:username] = env['omniauth.auth']['info']['name']
     session[:nickname] = env['omniauth.auth']['info']['nickname']
     session[:authenticated] = true
-    token = env['omniauth.auth']['credentials']['token']
+    @token = env['omniauth.auth']['credentials']['token']
+    session[:uid] = @token
 
-    redirect to('/')
+    redirect to('/projects')
   end
 
   get '/auth/failure' do
@@ -76,5 +78,13 @@ class WebController < Sinatra::Base
   get '/auth/signout' do
     logout!
     redirect to('/')
+  end
+
+  get '/projects' do
+    erb :projects
+  end
+
+  get '/planning' do
+    erb :planning
   end
 end

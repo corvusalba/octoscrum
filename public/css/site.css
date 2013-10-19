@@ -1,0 +1,18 @@
+.box {
+    width:100%;
+    height:auto;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    padding:10px 20px;
+    margin:5px 0px;
+}
+.userstory {
+    background-color:#0444B3;
+}
+.bug {
+    background-color:#B30000;
+}
+.box span {
+    color:white;
+}

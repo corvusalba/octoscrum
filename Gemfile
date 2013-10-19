@@ -2,6 +2,7 @@ source 'http://rubygems.org'
 
 gem 'sinatra'
 gem 'sinatra-static-assets'
+gem 'sinatra-contrib'
 #gem 'data_mapper', '1.2.0'
 gem 'json'
 gem 'memcached'
