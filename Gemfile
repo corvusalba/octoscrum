@@ -14,6 +14,8 @@ gem 'amqp'
 gem 'thin'
 gem 'rack'
 gem 'rubyzip'
+gem 'omniauth'
+gem 'omniauth-github'
 
 
 group :development do

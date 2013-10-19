@@ -43,8 +43,12 @@ class WebController < Sinatra::Base
 
   get '/auth/github/callback' do
     session[:uid] = env['omniauth.auth']['uid']
+    session[:token] = env['omniauth.auth']['token']
     session[:username] = env['omniauth.auth']['info']['name']
+    session[:nickname] = env['omniauth.auth']['info']['nickname']
     session[:authenticated] = true
+    token = env['omniauth.auth']['credentials']['token']
+
     redirect to('/')
   end
 
