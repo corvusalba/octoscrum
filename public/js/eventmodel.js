@@ -1,8 +1,6 @@
 var EventModel = function() {
     var self = this;
 
-    self.handler = null;
-
     return {
         handle: function(event) {
             self.handler(event);
@@ -10,16 +8,16 @@ var EventModel = function() {
 
         subscribe: function(screenType, screenId, handler) {
             self.handler = handler;
-            self.raise({
-                eventType: "subscribe",
-                screentType: screenType,
-                screenId: screenId,
-                data: null
-            })
+            EventModel.raise("subscribe", screenType, screenId, null);
         },
 
-        raise: function(event) {
-            Socket.send(event);
-        }
+        raise: function(eventType, screenType, screenId, data) {
+            Socket.send({
+                eventType: eventType,
+                screenType: screenType,
+                screenId: screenId,
+                data: data
+            });
+        };
     };
 }();
