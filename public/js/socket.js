@@ -10,7 +10,7 @@ var Socket = function(endpoint) {
     }
 
     var itemFromJs = function(item) {
-        var i =
+        var i = ko.mapping.fromJS(data);
         i.children = ko.observableArray();
         return i;
     }
@@ -58,5 +58,9 @@ var Socket = function(endpoint) {
 }();
 
 $(function() {
-    Socket.init("ws://localhost:8081/");
+    pathArray = window.location.href.split('/');
+    protocol = pathArray[0];
+    host = pathArray[2];
+    url = 'ws://' + host;
+    Socket.init(url);
 });
