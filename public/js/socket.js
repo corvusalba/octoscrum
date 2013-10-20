@@ -3,6 +3,17 @@ var Socket = function(endpoint) {
 
     self.connection = null;
 
+    var itemToJs = function(item) {
+        var i = ko.toJS(item);
+        delete i.children;
+        return i;
+    }
+
+    var itemFromJs = function(item) {
+        i.children = ko.observableArray();
+        return i;
+    }
+
     connection.onopen = function () {
         console.log("Opened.");
     };
@@ -16,7 +27,13 @@ var Socket = function(endpoint) {
     };
 
     connection.onmessage = function(e) {
-        EventModel.handle(JSON.parse(e.data));
+        var event = JSON.parse(e);
+        if (event.data != null) {
+            event.data = event.data.map(function(item) {
+                return itemFromJson(item);
+            });
+        }
+        EventModel.handle(event);
     };
 
     return {
@@ -25,10 +42,16 @@ var Socket = function(endpoint) {
         },
 
         send: function(event) {
+            if (event.data != null) {
+                event.data = event.data.map(function (item) {
+                    return itemToJs(item);
+                });
+            };
+
             self.connection.send(JSON.stringify(event));
         }
     };
-}();
+    ()};
 
 $(function() {
     Socket.init('http://localhost:8081/');

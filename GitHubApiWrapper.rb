@@ -17,15 +17,19 @@ module GitHubApiWrapper
 
         def initialize(login, token)
             @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
-
             @user = @client.user
             @id = @user.id
             @login = @user.login
+<<<<<<< HEAD
             @gravatarId = @user.gravatar_id
+=======
+            puts '- Creating user ' + @login
+>>>>>>> c939740a609698326f5fb3781f1a5a31ff5de9bd
             @projects = getProjects()
             @orgProjects = getOrgProjects()
             @children = getChildren()
             @type = 'user'
+            puts '- User created ' + @login
         end
 
         public
@@ -80,9 +84,13 @@ module GitHubApiWrapper
 
         def initialize(repoInfo, user)
             @repoInfo = repoInfo
-            @parent = user          
-            @children = getIterations()
+            puts '-- Creating project ' + @repoInfo.repo_name
+            @parent = user   
+            @iterations = getIterations()
+            @children = getChildren()
             @type = 'project'
+            puts @children
+            puts '-- Project created ' + @repoInfo.repo_name
         end
 
         public
@@ -107,8 +115,17 @@ module GitHubApiWrapper
             end
             return milestones
             rescue Octokit::ClientError => e
-                # puts e
+                puts e
+                return []
             end
+        end
+
+        def getChildren()
+            children = []
+                @iterations.each do |iter|
+                    children << iter.getId()
+                end
+            return children
         end
     end
 
@@ -119,11 +136,12 @@ module GitHubApiWrapper
             @repoInfo = repoInfo
             @id = number
             @title = title
+            puts '--- Creating iteration ' + @title
             @description = description
             @due_on = due_on
-
             @issues = getIssues
             @type = 'iteration'
+            puts '--- Iteration created ' + @title
         end
         
         public
@@ -148,6 +166,7 @@ module GitHubApiWrapper
             @id = number
             @repoInfo = repoInfo
             @title = title
+            puts '---- Creating issue ' + @title
             @body = body
             @type = nil
             @priority = nil
@@ -166,6 +185,8 @@ module GitHubApiWrapper
                     end
                 end
             end
+
+            puts '---- Issue created ' + @title
         end
     end
 end
