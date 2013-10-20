@@ -1,5 +1,3 @@
-#dropsonic token - '81adba2f0c8777524d993f062470081913b4f3f7'
-
 module GitHubApiWrapper
 	require 'octokit'
 
