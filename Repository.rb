@@ -87,6 +87,18 @@ module Repository
             return @id
         end
 
+        def addIteration(iteration, ownerName, repoName)
+            Octokit.create_milestone(ownerName + '/' + repoName, iteration.title, {:description => iteration.description, :due_on => iteration.due_on})
+        end
+
+        def updateIteration(iteration, ownerName, repoName)
+            Octokit.update_milestone(ownerName + '/' + repoName, iteration.id, {:title => iteration.due_on, :description => iteration.description, :due_on => iteration.due_on})
+        end
+
+        def deleteIteration(ownerName, repoName, iteration)
+            Octokit.delete_milestone(ownerName + '/' + repoName, iteration.id)
+        end
+
         private
         def getIssues()
             issues = []
