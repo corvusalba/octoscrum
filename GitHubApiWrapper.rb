@@ -42,7 +42,7 @@ module GitHubApiWrapper
 			@user = @client.user
 			@id = @user.id
 			@login = @user.login
-			@children = getRepositories			
+			@children = getProjects			
 		end
 
 		public
@@ -63,25 +63,25 @@ module GitHubApiWrapper
 		end
 
 		private 
-		def getRepositories()
+		def getProjects()
 			orgs = @client.organizations
 		
-			repositoryArray = [];
+			projectArray = [];
 
 			orgs.each do |org|
 				repos = @client.org_repos(org.login, {:type => 'member'})
 
 				repos.each do |repo|
 					repoInfo = RepoInfo.new(org.login, repo.name, repo.id)
-					repositoryArray << Repository.new(repoInfo, self)
+					projectArray << Project.new(repoInfo, self)
 				end
 			end
 
-			return repositoryArray
+			return projectArray
 		end
 	end
 
-	class Repository
+	class Project
 		include Base
 
 		def initialize(repoInfo, user)
@@ -112,7 +112,7 @@ module GitHubApiWrapper
 			end
 			return milestones
 			rescue Octokit::ClientError => e
-				puts e
+				# puts e
 			end
 		end
 	end
@@ -179,26 +179,6 @@ module GitHubApiWrapper
 					end
 				end
 			end
-		end
-	end
-
-	class UserStory
-		include Base
-
-		def initialize(parent, repoInfo, number, title, body)
-			@parent = parent
-			@id = number
-			@repoInfo = repoInfo
-			@title = title
-			@body = body
-		end
-
-		def getTitle()
-			return @title
-		end
-
-		def getBody()
-			return @body
 		end
 	end
 
