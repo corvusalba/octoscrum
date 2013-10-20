@@ -82,8 +82,9 @@ module Repository
             return Iteration.new(id, iteration.title, projectID, children)
         end
 
-        def addIteration(iteration, ownerName, repoName)
-            Octokit.create_milestone(ownerName + '/' + repoName, iteration.title, {:description => iteration.description, :due_on => iteration.due_on})
+        def add(login, token, projectID, iteration)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            client.create_milestone(projectID, iteration.title, {:description => iteration.description, :due_on => iteration.due_on})
         end
 
         def updateIteration(iteration, ownerName, repoName)
@@ -135,10 +136,10 @@ module Repository
             labels << 'Status:' + issue.status.capitalize
             labels << 'Priority:' + issue.priority.capitalize
             if issue.milestone != -1
-                client.create_issue(projectID, issue.title, issue.body, options = {labels: => labels, :milestone => issue.milestone})
+                client.create_issue(projectID, issue.title, issue.body, {labels: => labels, :milestone => issue.milestone})
             end
             else
-                client.create_issue(projectID, issue.title, issue.body, options = {labels: => labels})
+                client.create_issue(projectID, issue.title, issue.body, {labels: => labels})
             end
         end
 
@@ -149,10 +150,10 @@ module Repository
             labels << 'Status:' + issue.status.capitalize
             labels << 'Priority:' + issue.priority.capitalize
             if issue.milestone != -1
-                client.create_issue(projectID, issue.id, issue.title, issue.body, options = {labels: => labels, :milestone => issue.milestone})
+                client.create_issue(projectID, issue.id, issue.title, issue.body, {labels: => labels, :milestone => issue.milestone})
             end
             else
-                client.create_issue(projectID, issue.id, issue.title, issue.body, options = {labels: => labels})
+                client.create_issue(projectID, issue.id, issue.title, issue.body, {labels: => labels})
             end
         end
     end
