@@ -15,7 +15,7 @@ module Repository
     end
 
     class UserRepository
-        def getGravatarId()
+        def getGravatarId(login, token)
             client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
             return @client.user.gravatar_id
         end
@@ -33,9 +33,14 @@ module Repository
         end
 
         public
-        def getProjects()
-            result = getOrgProjects
-            return result.concat getUserProjects
+        def getProjects(login, token)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            repos = @client.repos(login)
+            projects = []
+            @client.repos().each do |repo|
+                projects << Project.new(repo.name, repo.title, login)
+            end
+            return projects
         end
 
         def getFull()
