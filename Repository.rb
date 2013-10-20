@@ -22,102 +22,51 @@ module Repository
     end
 
     class ProjectRepository
-
-        def initialize(login, token)
-            @login = login
-            @token = token
-            @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
-            @parent = client.user
-            @children = getChildren()
-            @type = 'project'
-        end
-
-        public
         def getProjects(login, token)
             client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
-            repos = @client.repos(login)
             projects = []
-            @client.repos().each do |repo|
+            client.repos().each do |repo|
+                projects << Project.new(repo.name, repo.title, login)
+            end
+            client.org_repos(org.login, {:type => 'member'}).each do |repo|
                 projects << Project.new(repo.name, repo.title, login)
             end
             return projects
         end
 
-        def getFull()
-
-        end
-
-        private
-        def getChildren()
-            milestones = []
-            
-            orgs = @client.organizations
-
-            orgs.each do |org|
-                milestones.concat getOrgIterations(org)
-                milestones.concat getUserIterations
-            end
-
-            return milestones
-        end
-
-        def getOrgIterations(org)
-            milestones = []
-
-            repos = Octokit.org_repos(org.login, {:type => 'member'})
-
-            repos.each do |repo|
-                begin
-                    Octokit.list_milestones(org.login + '/' + repo.name, {:direction => 'desc'}).each do |milestone|
-                        milestones <<  milestone.number
+        def getFull(repoName, login, token)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            children = []
+            client.list_milestones(login + '/' + repoName, {:direction => 'desc'}).each do |iter|
+                issues = []
+                client.list_issues(login + '/' + repoName).each do |issue|
+                    if issue.milestone == iter.number
+                        issues << issue.number
                     end
-                    return milestones
-                    rescue Octokit::ClientError => e
-                    # Не забыть выбросить Exception!!!!!!!!!!!!!!!!!!!!!!!!!!
                 end
+                children << Iteration.new(iter.number, iter.title, repoName, issues)
             end
-        end
 
-        def getUserIterations()
-            projects = []
-            @client.repos().each do |repo|
-                 begin
-                    Octokit.list_milestones(@parent.login + '/' + repo.name, {:direction => 'desc'}).each do |milestone|
-                        milestones <<  milestone.number
-                    end
-                    return milestones
-                    rescue Octokit::ClientError => e
-                    # Не забыть выбросить Exception!!!!!!!!!!!!!!!!!!!!!!!!!!
-                end
-            end
-            return projects
-        end
-
-        def getOrgProjects()
-            orgs = @client.organizations
-        
-            projectArray = [];
-
-            orgs.each do |org|
-                repos = @client.org_repos(org.login, {:type => 'member'})
-
-                repos.each do |repo|
-                    projectArray << Project.new(repo.id, repo.title, @parent, org.login)
+            client.list_issues(login + '/' + repoName).each do |issue|
+                if !issue.milestone?
+                    issue.labels.each do |label|
+                        if !label.nil?
+                            if label.name.include? 'Type'
+                                type = label.name[5..-1].downcase
+                            end
+                            if label.name.include? 'Priority'
+                                priority = label.name[9..-1].downcase
+                            end
+                            if label.name.include? 'Status'
+                                status = label.name[7..-1].downcase
+                            end
+                        end
+                    children << Issue.new(issue.number, issue.title, issue.body, type, priority, status, -1, -1)
                 end
             end
 
-            return projectArray
+            return children
         end
-
-        def getUserProjects(withChildren)
-            projects = []
-            @client.repos().each do |repo|
-                projects << Project.new(repo.id, repo.title, @parent, -1)
-            end
-
-            return projects
-        end        
-    end
 
     class IterationRepository
 
@@ -136,6 +85,18 @@ module Repository
         public
         def getIteration()
             return @id
+        end
+
+        def addIteration(iteration, ownerName, repoName)
+            Octokit.create_milestone(ownerName + '/' + repoName, iteration.title, {:description => iteration.description, :due_on => iteration.due_on})
+        end
+
+        def updateIteration(iteration, ownerName, repoName)
+            Octokit.update_milestone(ownerName + '/' + repoName, iteration.id, {:title => iteration.due_on, :description => iteration.description, :due_on => iteration.due_on})
+        end
+
+        def deleteIteration(ownerName, repoName, iteration)
+            Octokit.delete_milestone(ownerName + '/' + repoName, iteration.id)
         end
 
         private
