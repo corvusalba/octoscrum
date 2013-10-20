@@ -7,7 +7,7 @@ var ProjectViewModel = function() {
         return ko.utils.arrayFirst(self.iterations(), function(iteration) {
             return iteration.id() === id;
         });
-    }
+    };
 
     self.getIsuue = function(parent, id) {
         var iteration = self.getIteration(parent);
@@ -16,7 +16,7 @@ var ProjectViewModel = function() {
         return ko.utils.arrayFirst(iteration.children(), function(issue) {
             return issue.id() === id;
         });
-    }
+    };
 
     self.onadd = function(data) {
         data.each(function (item) {
@@ -30,7 +30,7 @@ var ProjectViewModel = function() {
                 }
             }
         });
-    }
+    };
 
     self.onupdated = function(data) {
         data.each(function (item) {
@@ -38,7 +38,7 @@ var ProjectViewModel = function() {
                 var iteration = self.getIteration(item.id());
                 if (iteration != null)
                 {
-                    updateIteration(iteration, item)
+                    updateIteration(iteration, item);
                 }
             }
             if (item.type() === "bug" || item.type() == "feature") {
@@ -48,11 +48,11 @@ var ProjectViewModel = function() {
                 }
             }
         });
-    }
+    };
 
     self.onremoved = function(data) {
         data.each(function (item) {
-            if (item.type() === "iteration" and item.id() != "-1") {
+            if (item.type() === "iteration" && item.id() != "-1") {
                 var iteration = self.getIteration(item.id());
                 if (iteration != null)
                 {
@@ -66,13 +66,13 @@ var ProjectViewModel = function() {
                 }
             }
         });
-    }
+    };
 
     self.populate = function(data) {
         // TODO Add "unassigned" iteration
         self.iterations([]);
         self.onadd(data);
-    }
+    };
 
     self.handle = function(event) {
         if (event["eventType"] == "subscribed") {
@@ -87,24 +87,24 @@ var ProjectViewModel = function() {
         if (event["eventType"] == "removed") {
             self.onremoved(event["data"]);
         }
-    }
+    };
 
     self.addItem = function(item) {
         EventModel.raise("add", "project", getScreenId(), [ item ]);
-    }
+    };
 
     self.updateItem = function(item) {
         EventModel.raise("update", "project", getScreenId(), [ item ]);
-    }
+    };
 
     self.removeItem function(item) {
         EventModel.raise("remove", "project", getScreenId(), [ item ]);
-    }
+    };
 
     self.init = function()
     {
         EventModel.subscribe("project", getScreenId(), self.handle);
-    }
+    };
 };
 
 var ProjectView = null;

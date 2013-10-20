@@ -24,20 +24,35 @@
     <a class="btn btn-primary pull-right" style="margin:5px">Add Bug</a>
   </div>
 </div>
-<ul class="list-group">
-
+<ul class="list-group" data-bind="value: iterations">
 
     <li class="list-group-item">
-      <h1>Unassigned</h1>
-      <ul class="list-unstyled">
+      <h1>
+        <div class="row">
+          <div class="col-md-6">
+            <a href="#" data-bind="text: title"></a>
+          </div>
+          <div class="col-md-5">
+            <a class="btn btn-default dropdown-toggle pull-right" data-toggle="dropdown" href="#" data-bind="text: due-on">
+              <span class="caret"></span>
+            </a>
+          </div>
+          <div class="col-md-1">
+            <div class="btn-group btn-group-xs">
+              <a class="btn btn-default btn-info">E</a>
+              <a class="btn btn-default btn-danger">D</a>
+            </div>
+          </div>
+        </div>
+      </h1>
+      <ul class="list-unstyled" data-bind="foreach: children ">
         <li>
           <div class="row">
             <div class="col-md-10 col-md-offset-1">
-              <div class="box userstory">
+              <div class="box" data-bind="css: { bug: type() === 'bug', feature: type() == 'feature' }">
                 <div class="row">
                   <div class="col-md-8">
-                            <span>
-                              As a user, I want to drag&drop user stories because it is cool.
+                            <span data-bind="text: title">
                             </span>
                   </div>
                   <div class="col-md-4">
@@ -48,27 +63,9 @@
                   </div>
                 </div>
               </div>
-
-              <div class="box bug">
-                <div class="row">
-                  <div class="col-md-8">
-                            <span>
-                              Can't drag&amp;drop user story.
-                            </span>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="btn-group pull-right btn-group-xs">
-                      <a class="btn btn-default">Edit</a>
-                      <a class="btn btn-default">Delete</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
           </div>
         </li>
       </ul>
     </li>
-
 </ul>
