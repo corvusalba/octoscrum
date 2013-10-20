@@ -21,10 +21,20 @@ module GitHubApiWrapper
             @user = @client.user
             @id = @user.id
             @login = @user.login
+            @gravatarId = @user.gravatar_id
             @projects = getProjects()
             @orgProjects = getOrgProjects()
             @children = getChildren()
             @type = 'user'
+        end
+
+        public
+        def getGravatarId
+          @gravatarId
+        end
+
+        def octoUser
+          @user
         end
 
         private 
@@ -124,8 +134,8 @@ module GitHubApiWrapper
         private
         def getIssues()
             issues = []
-            Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name).each do |issue|
-                issue << Issue.new(@id, repoInfo.repo_name, issue.number, issue.title, issue.body, issue.labels)
+            Octokit.list_issues(@repoInfo.org_name + '/' + @repoInfo.repo_name).each do |issue|
+                issues << Issue.new(@id, @repoInfo.repo_name, issue.number, issue.title, issue.body, issue.labels)
             end
             return issues
         end

@@ -78,6 +78,7 @@
   </head>
 
   <body>
+      <div style="height:30px;min-height:30px"></div>
       <div class="container">
 
         <% if session[:authenticated] %>
@@ -92,8 +93,8 @@
             <ol class="breadcrumb">
               <li>
                 <a href="/projects">
-                  <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
-                  <%= session[:nickname]%>
+                  <img src="<%= session[:avatarUrl] %>" height="48" width="48">
+                  <%= session[:login]%>
                 </a>
               </li>
               <%= yield_content :breadcrumbs %>
