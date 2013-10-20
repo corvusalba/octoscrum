@@ -57,3 +57,4 @@ doc/
 
 #temp files
 *~
+Gemfile.lock
