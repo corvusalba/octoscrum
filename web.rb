@@ -17,7 +17,7 @@ class WebController < Sinatra::Base
     scopeAll = 'user,public_repo,repo,gist'
     if (ENV['RACK_ENV'] == 'production')
       use Rack::Session::Cookie, :key => 'rack.session',
-      :domain => 'corvus-alba.r13.railsrumble.com',
+      :domain => 'octoscrum.r13.railsrumble.com',
       :path => '/',
       :expire_after => 2592000, # In seconds
       :secret => 'qwerty'

@@ -15,32 +15,9 @@ module Repository
     end
 
     class UserRepository
-
-        public
-        def initialize(login, token)
-            @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
-
-            @user = @client.user
-            @login = @user.login            
-            @children = getChildren()
-            @type = 'user'            
-        end
-
-        def getUser()
-            return User.new(@login, @children)
-        end
-
-        private 
-        def getChildren()
-            children = []
-
-            @projects.each do |project|
-                children << project.getId()
-            end
-            @orgProjects.each do |project|
-                children << project.getId()
-            end
-            return children
+        def getGravatarId()
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            return @client.user.gravatar_id
         end
     end
 
