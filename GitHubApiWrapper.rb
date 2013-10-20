@@ -130,10 +130,6 @@ module GitHubApiWrapper
 			@description = description
 			@due_on = due_on
 
-			@children = []
-			@children.concat getUserStories
-			@children.concat getBugs 
-
 			@issues = getIssues
 			@type = 'iteration'
 		end
@@ -143,65 +139,42 @@ module GitHubApiWrapper
 			return @id
 		end
 
-		def getUserStoriesAndBugs()
-			childesArray = []
-			
-			userStories = getUserStories()
-			childesArray << userStories
-			
-			bugs = getBugs()
-			childesArray << bugs
-
-			return childesArray
-		end
-
 		private
 		def getIssues()
-			Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name)	
-		end
-
-		def getUserStories()
-			userStories = []
-
-			@issues.each do |issue|
-				issue.labels.each do |label|
-					if !label.nil? && label.name == 'Type:UserStory'
-						userStories <<  UserStory.new(self, repoInfo, issue.number, issue.title, issue.body)
-					end
-				end
+			issues = []
+			Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name).each do |issue|
+				issue << Issue.new(@id, repoInfo.repo_name, issue.number, issue.title, issue.labels)
 			end
-		end
-
-		def getBugs()
-			bugs = []
-
-			@issues.each do |issue|
-				issue.labels.each do |label|
-					if !label.nil? && label.name == 'Type:Bug'
-						userStories <<  Bug.new(self, repoInfo, issue.number, issue.title, issue.body)
-					end
-				end
-			end
+			return issues
 		end
 	end
 
-	class Bug
+	class Issue
 		include Base
 
-		def initialize(parent, repoInfo, number, title, body)
+		def initialize(parent, repoInfo, number, title, body, labels)
 			@parent = parent
 			@id = number
 			@repoInfo = repoInfo
 			@title = title
 			@body = body
-		end
+			@type = nil
+			@priority = nil
+			@status = nil
 
-		def getTitle()
-			return @title
-		end
-
-		def getBody()
-			return @body
+			labels.each do |label|
+				if !label.nil?
+					if label.name.include? 'Type'
+						@type = label.name[5..-1]
+					end
+					if label.name.include? 'Priority'
+						@priority = label.name[9..-1]
+					end
+					if label.name.include? 'Status'
+						@status = label.name[7..-1]
+					end
+				end
+			end
 		end
 	end
 end
