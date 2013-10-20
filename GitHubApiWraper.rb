@@ -108,11 +108,14 @@ module GitHubApiWrapper
 		private
 		def getIterations()
 			milestones = []
+			begin
 			Octokit.list_milestones(@repoInfo.org_name + '/' + @repoInfo.repo_name, {:direction => 'desc'}).each do |milestone|
 				milestones <<  Iteration.new(self, @repoInfo, milestone.number, milestone.title, milestone.description, milestone.due_on)
 			end
-
 			return milestones
+			rescue Octokit::ClientError => e
+				puts e
+			end
 		end
 	end
 
@@ -153,12 +156,7 @@ module GitHubApiWrapper
 
 		private
 		def getIssues()
-			begin
-			 Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name)
-			 rescue e
-			 	puts "There's an error! Text: #{e.inspect}"
-			 	#raise e
-			end			
+			Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name)	
 		end
 
 		def getUserStories()
