@@ -20,11 +20,8 @@ module GitHubApiWrapper
             @user = @client.user
             @id = @user.id
             @login = @user.login
-<<<<<<< HEAD
             @gravatarId = @user.gravatar_id
-=======
             puts '- Creating user ' + @login
->>>>>>> c939740a609698326f5fb3781f1a5a31ff5de9bd
             @projects = getProjects()
             @orgProjects = getOrgProjects()
             @children = getChildren()
