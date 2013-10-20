@@ -60,7 +60,7 @@ var Socket = function(endpoint) {
 $(function() {
     pathArray = window.location.href.split('/');
     protocol = pathArray[0];
-    host = pathArray[2];
-    url = 'ws://' + host;
+    host = pathArray[2].split(':')[0];
+    url = 'ws://' + host + ":8081";
     Socket.init(url);
 });
