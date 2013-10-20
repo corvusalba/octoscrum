@@ -36,6 +36,8 @@ class Iteration
     def initialize(id, title, parent, children)
         @id = id
         @title = title
+        @description = description
+        @due_on = due_on
         @type = 'iteration'
         @parent = parent
         @children = children
