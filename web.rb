@@ -81,10 +81,12 @@ class WebController < Sinatra::Base
   end
 
   get '/projects' do
+    authorize!
     erb :projects
   end
 
   get '/planning' do
+    authorize!
     erb :planning
   end
 
