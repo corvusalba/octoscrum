@@ -16,7 +16,7 @@ module Repository
 
     class UserRepository
         def getGravatarId(login, token)
-            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
             return @client.user.gravatar_id
         end
     end
