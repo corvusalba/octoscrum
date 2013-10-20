@@ -4,6 +4,8 @@ require 'sinatra/content_for'
 require 'omniauth'
 require 'omniauth-github'
 
+require './GitHubApiWrapper.rb'
+
 class WebController < Sinatra::Base
 
   helpers Sinatra::ContentFor
@@ -50,6 +52,8 @@ class WebController < Sinatra::Base
     session[:authenticated] = false
   end
 
+  #/projects/{projectid}/{iterationid}
+
   get '/' do
     if authenticated?
       erb :projects
@@ -64,8 +68,9 @@ class WebController < Sinatra::Base
     session[:username] = env['omniauth.auth']['info']['name']
     session[:nickname] = env['omniauth.auth']['info']['nickname']
     session[:authenticated] = true
-    @token = env['omniauth.auth']['credentials']['token']
-    session[:uid] = @token
+
+    #@user = GitHubApiWrapper::User.new(session[:token])
+    #session[:uid] = @user.getLogin()
 
     redirect to('/projects')
   end
@@ -83,6 +88,21 @@ class WebController < Sinatra::Base
   get '/projects' do
     authorize!
     erb :projects
+  end
+
+  get '/planning' do
+    erb :project
+  end
+
+  get '/projects/:projectid' do |projectid|
+    authorize!
+    erb :project
+  end
+
+  get '/projects/:projectid/:iterationid' do |projectid, iterationid|
+    authorize!
+    erb :project
+    #erb :iteration
   end
 
   get '/planning' do
