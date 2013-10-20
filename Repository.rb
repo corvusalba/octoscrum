@@ -1,6 +1,6 @@
 module Repository
     require 'octokit'
-    require 'poco'
+    require './poco.rb'
 
     class RepoInfo
         attr_reader :org_name
