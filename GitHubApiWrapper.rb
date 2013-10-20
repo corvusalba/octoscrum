@@ -21,29 +21,14 @@ module GitHubApiWrapper
             @user = @client.user
             @id = @user.id
             @login = @user.login
-            @children = getProjects
+            @projects = getProjects()
+            @orgProjects = getOrgProjects()
+            @children = getChildren()
             @type = 'user'
         end
 
-        public
-        def getChildes()
-            return @childes
-        end
-
-        def getId()
-            return @id
-        end
-
-        def getLogin()
-            return @login
-        end
-
-        def getOrgs()
-            return @client.organizations
-        end
-
         private 
-        def getProjects()
+        def getOrgProjects()
             orgs = @client.organizations
         
             projectArray = [];
@@ -53,11 +38,31 @@ module GitHubApiWrapper
 
                 repos.each do |repo|
                     repoInfo = RepoInfo.new(org.login, repo.name, repo.id)
-                    projectArray << Project.new(repoInfo, self)
+                    projectArray << Project.new(repoInfo, @id)
                 end
             end
 
             return projectArray
+        end
+
+        def getProjects()
+            projects = []
+            @client.repos().each do |repo|
+                repoInfo = RepoInfo.new(@user.login, repo.name, repo.id)
+                projects << Project.new(repoInfo, @id)
+            end
+            return projects
+        end
+
+        def getChildren()
+            children = []
+            @projects.each do |project|
+                children << project.getId()
+            end
+            @orgProjects.each do |project|
+                children << project.getId()
+            end
+            return children
         end
     end
 
@@ -120,7 +125,7 @@ module GitHubApiWrapper
         def getIssues()
             issues = []
             Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name).each do |issue|
-                issue << Issue.new(@id, repoInfo.repo_name, issue.number, issue.title, issue.labels)
+                issue << Issue.new(@id, repoInfo.repo_name, issue.number, issue.title, issue.body, issue.labels)
             end
             return issues
         end
@@ -154,5 +159,3 @@ module GitHubApiWrapper
         end
     end
 end
-
-user = GitHubApiWrapper::User.new('e75ea0f0a99d4047168da7d034e9fb988cba15e9')
