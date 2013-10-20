@@ -1,26 +1,6 @@
 module GitHubApiWrapper
     require 'octokit'
 
-    module Base
-
-        @id = nil
-        @parent = nil
-        @children = nil
-
-        public
-        def getChildren()
-            return @children
-        end
-
-        def getId()
-            return @id
-        end
-
-        def getParent()
-            return @parent
-        end
-    end
-
     class RepoInfo
         attr_reader :org_name
         attr_reader :repo_name
@@ -34,7 +14,6 @@ module GitHubApiWrapper
     end
 
     class User
-        include Base
 
         def initialize(token)
             @client = Octokit::Client.new :access_token => token
@@ -83,7 +62,6 @@ module GitHubApiWrapper
     end
 
     class Project
-        include Base
 
         def initialize(repoInfo, user)
             @repoInfo = repoInfo
@@ -120,7 +98,6 @@ module GitHubApiWrapper
     end
 
     class Iteration
-        include Base
 
         def initialize(parent, repoInfo, number, title, description, due_on)
             @parent = parent
@@ -150,7 +127,6 @@ module GitHubApiWrapper
     end
 
     class Issue
-        include Base
 
         def initialize(parent, repoInfo, number, title, body, labels)
             @parent = parent
@@ -178,3 +154,5 @@ module GitHubApiWrapper
         end
     end
 end
+
+user = GitHubApiWrapper::User.new('e75ea0f0a99d4047168da7d034e9fb988cba15e9')
