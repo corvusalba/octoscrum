@@ -70,22 +70,16 @@ module Repository
         end
 
     class IterationRepository
-
-        def initialize(parent, repoInfo, number, title, description, due_on)
-            @parent = parent
-            @repoInfo = repoInfo
-            @id = number
-            @title = title
-            @description = description
-            @due_on = due_on
-
-            @issues = getIssues
-            @type = 'iteration'
-        end
-        
-        public
-        def getIteration()
-            return @id
+        def get(login, token, projectID, id)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            iteration = client.milestone(projectID, id)
+            children = []
+            client.list_issues(projectID).each do |iter|
+                if iter.milestone.number == iteration.number
+                    children << iter.number
+                end
+            end
+            return Iteration.new(id, iteration.title, projectID, children)
         end
 
         def addIteration(iteration, ownerName, repoName)
@@ -161,6 +155,5 @@ module Repository
                 client.create_issue(projectID, issue.id, issue.title, issue.body, options = {labels: => labels})
             end
         end
-
     end
 end
