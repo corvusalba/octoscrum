@@ -9,8 +9,13 @@ var EventModel = function() {
         },
 
         subscribe: function(screenType, screenId, handler) {
-            // TODO sent subscription event
             self.handler = handler;
+            self.raise({
+                eventType: "subscribe",
+                screentType: screenType,
+                screenId: screenId,
+                data: null
+            })
         },
 
         raise: function(event) {

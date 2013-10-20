@@ -80,32 +80,31 @@
   <body>
       <div class="container">
 
-          <% if session[:authenticated] %>
-              <div class="row">
-                <div class="col-md-12">
-                  <a href="/auth/signout" class="pull-right">
-                    <i class="icon-signout">sign out</i>
-                  </a>
-                </div>
+        <% if session[:authenticated] %>
+            <div class="row">
+              <div class="col-md-12">
+                <a href="/auth/signout" class="pull-right">
+                  <i class="icon-signout"></i>sign out
+                </a>
               </div>
-          <% end %>
+            </div>
 
-          <ol class="breadcrumb">
-            <li>
-              <a href="/projects">
-                <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
-                <%= session[:nickname]%>
-              </a>
-            </li>
-            <%= yield_content :breadcrumbs %>
-          </ol>
+            <ol class="breadcrumb">
+              <li>
+                <a href="/projects">
+                  <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
+                  <%= session[:nickname]%>
+                </a>
+              </li>
+              <%= yield_content :breadcrumbs %>
+            </ol>
+        <% end %>
 
         <%= yield %>
 
         <div class="footer">
           <p>
-            <a href="#"><img src="http://www.corvusalba.ru/static/logo.png" height="50"></a>
-            &copy; Company 2013
+            &copy; Corvus Alba 2013
           </p>
         </div>
       </div>
