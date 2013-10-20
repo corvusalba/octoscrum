@@ -10,35 +10,40 @@ var Socket = function(endpoint) {
     }
 
     var itemFromJs = function(item) {
+        var i =
         i.children = ko.observableArray();
         return i;
     }
 
-    connection.onopen = function () {
-        console.log("Opened.");
-    };
-
-    connection.onclose = function () {
-        console.log("Closed.");
-    };
-
-    connection.onerror = function (error) {
-        console.log("Error: " + error);
-    };
-
-    connection.onmessage = function(e) {
-        var event = JSON.parse(e);
-        if (event.data != null) {
-            event.data = event.data.map(function(item) {
-                return itemFromJson(item);
-            });
-        }
-        EventModel.handle(event);
-    };
-
     return {
+        onmessage: function(e) {
+            var event = JSON.parse(e);
+            if (event.data != null) {
+                event.data = event.data.map(function(item) {
+                    return itemFromJson(item);
+                });
+            }
+            EventModel.handle(event);
+        },
+
         init: function(endpoint) {
             self.connection = new WebSocket(endpoint);
+
+            self.connection.onopen = function () {
+                console.log("Opened.");
+            };
+
+            self.connection.onclose = function () {
+                console.log("Closed.");
+            };
+
+            self.connection.onerror = function (error) {
+                console.log("Error: " + error);
+            };
+
+            self.connection.onmessage = function(e) {
+                self.onmessage(e);
+            };
         },
 
         send: function(event) {
@@ -46,13 +51,12 @@ var Socket = function(endpoint) {
                 event.data = event.data.map(function (item) {
                     return itemToJs(item);
                 });
-            };
-
+            }
             self.connection.send(JSON.stringify(event));
         }
     };
-    ()};
+}();
 
 $(function() {
-    Socket.init('http://localhost:8081/');
+    Socket.init("ws://localhost:8081/");
 });

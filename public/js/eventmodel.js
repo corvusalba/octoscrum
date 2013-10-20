@@ -20,6 +20,6 @@ var EventModel = function() {
                 screenId: screenId,
                 data: data
             });
-        };
+        }
     };
 }();
