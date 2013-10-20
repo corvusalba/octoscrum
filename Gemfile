@@ -14,18 +14,9 @@ gem 'amqp'
 gem 'thin'
 gem 'rack'
 gem 'rubyzip'
-gem 'omniauth'
+gem 'omniauth', git: "git://github.com/intridea/omniauth-oauth2.git"
 gem 'omniauth-github'
 
-
 group :development do
-  #gem 'dm-sqlite-adapter', '1.2.0'
   gem 'sass'
-  #gem 'rubyzip'
 end
-
-#If you plan on deploying to Heroku, uncomment this group
-
-#group :production do
-#  gem 'dm-postgres-adapter'
-#end
