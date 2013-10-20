@@ -42,7 +42,7 @@ module GitHubApiWrapper
 			@user = @client.user
 			@id = @user.id
 			@login = @user.login
-			@children = getRepositories			
+			@children = getProjects			
 		end
 
 		public
@@ -63,25 +63,25 @@ module GitHubApiWrapper
 		end
 
 		private 
-		def getRepositories()
+		def getProjects()
 			orgs = @client.organizations
 		
-			repositoryArray = [];
+			projectArray = [];
 
 			orgs.each do |org|
 				repos = @client.org_repos(org.login, {:type => 'member'})
 
 				repos.each do |repo|
 					repoInfo = RepoInfo.new(org.login, repo.name, repo.id)
-					repositoryArray << Repository.new(repoInfo, self)
+					projectArray << Project.new(repoInfo, self)
 				end
 			end
 
-			return repositoryArray
+			return projectArray
 		end
 	end
 
-	class Repository
+	class Project
 		include Base
 
 		def initialize(repoInfo, user)
