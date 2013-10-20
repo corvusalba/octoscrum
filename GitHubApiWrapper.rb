@@ -1,207 +1,179 @@
 module GitHubApiWrapper
-	require 'octokit'
+    require 'octokit'
 
-	module Base
+    class RepoInfo
+        attr_reader :org_name
+        attr_reader :repo_name
+        attr_reader :repo_id
 
-		@id = nil
-		@parent = nil
-		@children = nil
+        def initialize(org_name, repo_name, repo_id)
+            @org_name = org_name
+            @repo_name = repo_name
+            @repo_id = repo_id
+        end
+    end
 
-		public
-		def getChildren()
-			return @children
-		end
+    class User
 
-		def getId()
-			return @id
-		end
+        def initialize(login, token)
+            @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            @user = @client.user
+            @id = @user.id
+            @login = @user.login
+            puts '- Creating user ' + @login
+            @projects = getProjects()
+            @orgProjects = getOrgProjects()
+            @children = getChildren()
+            @type = 'user'
+            puts '- User created ' + @login
+        end
 
-		def getParent()
-			return @parent
-		end
-	end
+        private 
+        def getOrgProjects()
+            orgs = @client.organizations
+        
+            projectArray = [];
 
-	class RepoInfo
-		attr_reader :org_name
-		attr_reader :repo_name
-		attr_reader :repo_id
+            orgs.each do |org|
+                repos = @client.org_repos(org.login, {:type => 'member'})
 
-		def initialize(org_name, repo_name, repo_id)
-			@org_name = org_name
-			@repo_name = repo_name
-			@repo_id = repo_id
-		end
-	end
+                repos.each do |repo|
+                    repoInfo = RepoInfo.new(org.login, repo.name, repo.id)
+                    projectArray << Project.new(repoInfo, @id)
+                end
+            end
 
-	class User
-		include Base
+            return projectArray
+        end
 
-		def initialize(token)
-			@client = Octokit::Client.new :access_token => token
+        def getProjects()
+            projects = []
+            @client.repos().each do |repo|
+                repoInfo = RepoInfo.new(@user.login, repo.name, repo.id)
+                projects << Project.new(repoInfo, @id)
+            end
+            return projects
+        end
 
-			@user = @client.user
-			@id = @user.id
-			@login = @user.login
-			@children = getProjects
-			@type = 'user'
-		end
+        def getChildren()
+            children = []
+            @projects.each do |project|
+                children << project.getId()
+            end
+            @orgProjects.each do |project|
+                children << project.getId()
+            end
+            return children
+        end
+    end
 
-		public
-		def getChildes()
-			return @childes
-		end
+    class Project
 
-		def getId()
-			return @id
-		end
+        def initialize(repoInfo, user)
+            @repoInfo = repoInfo
+            puts '-- Creating project ' + @repoInfo.repo_name
+            @parent = user   
+            @iterations = getIterations()
+            @children = getChildren()
+            @type = 'project'
+            puts @children
+            puts '-- Project created ' + @repoInfo.repo_name
+        end
 
-		def getLogin()
-			return @login
-		end
+        public
+        def getName()
+            return @repoInfo.repo_name
+        end
 
-		def getOrgs()
-			return @client.organizations
-		end
+        def getId()
+            return @repoInfo.repo_id
+        end
 
-		private 
-		def getProjects()
-			orgs = @client.organizations
-		
-			projectArray = [];
+        def getChildren()
+            return @children
+        end
 
-			orgs.each do |org|
-				repos = @client.org_repos(org.login, {:type => 'member'})
+        private
+        def getIterations()
+            milestones = []
+            begin
+            Octokit.list_milestones(@repoInfo.org_name + '/' + @repoInfo.repo_name, {:direction => 'desc'}).each do |milestone|
+                milestones <<  Iteration.new(self, @repoInfo, milestone.number, milestone.title, milestone.description, milestone.due_on)
+            end
+            return milestones
+            rescue Octokit::ClientError => e
+                puts e
+                return []
+            end
+        end
 
-				repos.each do |repo|
-					repoInfo = RepoInfo.new(org.login, repo.name, repo.id)
-					projectArray << Project.new(repoInfo, self)
-				end
-			end
+        def getChildren()
+            children = []
+                @iterations.each do |iter|
+                    children << iter.getId()
+                end
+            return children
+        end
+    end
 
-			return projectArray
-		end
-	end
+    class Iteration
 
-	class Project
-		include Base
+        def initialize(parent, repoInfo, number, title, description, due_on)
+            @parent = parent
+            @repoInfo = repoInfo
+            @id = number
+            @title = title
+            puts '--- Creating iteration ' + @title
+            @description = description
+            @due_on = due_on
+            @issues = getIssues
+            @type = 'iteration'
+            puts '--- Iteration created ' + @title
+        end
+        
+        public
+        def getId()
+            return @id
+        end
 
-		def initialize(repoInfo, user)
-			@repoInfo = repoInfo
-			@parent = user			
-			@children = getIterations()
-			@type = 'project'
-		end
+        private
+        def getIssues()
+            issues = []
+            Octokit.list_issues(@repoInfo.org_name + '/' + @repoInfo.repo_name).each do |issue|
+                issues << Issue.new(@id, @repoInfo.repo_name, issue.number, issue.title, issue.body, issue.labels)
+            end
+            return issues
+        end
+    end
 
-		public
-		def getName()
-			return @repoInfo.repo_name
-		end
+    class Issue
 
-		def getId()
-			return @repoInfo.repo_id
-		end
+        def initialize(parent, repoInfo, number, title, body, labels)
+            @parent = parent
+            @id = number
+            @repoInfo = repoInfo
+            @title = title
+            puts '---- Creating issue ' + @title
+            @body = body
+            @type = nil
+            @priority = nil
+            @status = nil
 
-		def getChildren()
-			return @children
-		end
+            labels.each do |label|
+                if !label.nil?
+                    if label.name.include? 'Type'
+                        @type = label.name[5..-1]
+                    end
+                    if label.name.include? 'Priority'
+                        @priority = label.name[9..-1]
+                    end
+                    if label.name.include? 'Status'
+                        @status = label.name[7..-1]
+                    end
+                end
+            end
 
-		private
-		def getIterations()
-			milestones = []
-			begin
-			Octokit.list_milestones(@repoInfo.org_name + '/' + @repoInfo.repo_name, {:direction => 'desc'}).each do |milestone|
-				milestones <<  Iteration.new(self, @repoInfo, milestone.number, milestone.title, milestone.description, milestone.due_on)
-			end
-			return milestones
-			rescue Octokit::ClientError => e
-				# puts e
-			end
-		end
-	end
-
-	class Iteration
-		include Base
-
-		def initialize(parent, repoInfo, number, title, description, due_on)
-			@parent = parent
-			@repoInfo = repoInfo
-			@id = number
-			@title = title
-			@description = description
-			@due_on = due_on
-
-			@children = []
-			@children.concat getUserStories
-			@children.concat getBugs 
-
-			@issues = getIssues
-			@type = 'iteration'
-		end
-		
-		public
-		def getId()
-			return @id
-		end
-
-		def getUserStoriesAndBugs()
-			childesArray = []
-			
-			userStories = getUserStories()
-			childesArray << userStories
-			
-			bugs = getBugs()
-			childesArray << bugs
-
-			return childesArray
-		end
-
-		private
-		def getIssues()
-			Octokit.list_issues(repoInfo.org_name + '/' + repoInfo.repo_name)	
-		end
-
-		def getUserStories()
-			userStories = []
-
-			@issues.each do |issue|
-				issue.labels.each do |label|
-					if !label.nil? && label.name == 'Type:UserStory'
-						userStories <<  UserStory.new(self, repoInfo, issue.number, issue.title, issue.body)
-					end
-				end
-			end
-		end
-
-		def getBugs()
-			bugs = []
-
-			@issues.each do |issue|
-				issue.labels.each do |label|
-					if !label.nil? && label.name == 'Type:Bug'
-						userStories <<  Bug.new(self, repoInfo, issue.number, issue.title, issue.body)
-					end
-				end
-			end
-		end
-	end
-
-	class Bug
-		include Base
-
-		def initialize(parent, repoInfo, number, title, body)
-			@parent = parent
-			@id = number
-			@repoInfo = repoInfo
-			@title = title
-			@body = body
-		end
-
-		def getTitle()
-			return @title
-		end
-
-		def getBody()
-			return @body
-		end
-	end
+            puts '---- Issue created ' + @title
+        end
+    end
 end
