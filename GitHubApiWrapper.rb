@@ -15,8 +15,8 @@ module GitHubApiWrapper
 
     class User
 
-        def initialize(token)
-            @client = Octokit::Client.new :access_token => token
+        def initialize(login, token)
+            @client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
             @user = @client.user
             @id = @user.id
             @login = @user.login
@@ -177,5 +177,3 @@ module GitHubApiWrapper
         end
     end
 end
-
-user = GitHubApiWrapper::User.new('e4fd752d525aab1477e86d176408c475ba8150e2')
