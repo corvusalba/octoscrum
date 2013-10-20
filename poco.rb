@@ -5,12 +5,11 @@ class Project
     attr_accessor :org
     attr_accessor :children
 
-    def initialize(id, title, user, org)
+    def initialize(id, title, maintainer)
         @id = id
         @title = title
         @type = 'project'
-        @user = user
-        @org = org
+        @maintainer = maintainer
         @children = nil
     end
 end
