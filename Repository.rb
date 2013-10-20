@@ -88,12 +88,13 @@ module Repository
         end
 
         def update(login, token, projectID, iteration)
-            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)        end
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
             client.update_milestone(projectID, iteration.number, {:title => iteration.title, :description => iteration.description, :due_on => iteration.due_on})
         end
 
-        def deleteIteration(ownerName, repoName, iteration)
-            Octokit.delete_milestone(ownerName + '/' + repoName, iteration.id)
+        def remove(login, token, projectID, id)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            client.delete_milestone(projectID, id)
         end
 
         private
