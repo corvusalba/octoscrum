@@ -13,6 +13,8 @@ var EventModel = function() {
 
         raise: function(eventType, screenType, screenId, data) {
             Socket.send({
+                login: getLogin(),
+                token: getToken(),
                 eventType: eventType,
                 screenType: screenType,
                 screenId: screenId,
