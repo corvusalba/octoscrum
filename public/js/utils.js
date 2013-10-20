@@ -16,7 +16,7 @@ Array.each = function(handler) {
     for (int i = 0; i < this.length; i++) {
         handler(this[i]);
     }
-}
+};
 
 Array.map = function(handler) {
     var result = [];
@@ -24,16 +24,34 @@ Array.map = function(handler) {
         result.push(handler(this[i]));
     }
     return result;
+};
+
+function getCookie(name) {
+    var matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ))
+    return matches ? decodeURIComponent(matches[1]) : undefined
+}
+
+
+var getLogin = function() {
+    return getCookie('login');
+};
+
+var getToken = function() {
+    return getCookie('token');
 }
 
 var redirect = function(location) {
-    // TODO Write redirect message;
-}
+    document.location.href = location;
+};
 
 var getScreenId = function() {
     var uri = window.location.pathname;
     return uri.split["/"].clean("").last;
 };
+
+// TODO:
 
 var createIteration = function() {
     return {
@@ -41,11 +59,7 @@ var createIteration = function() {
     };
 }
 
-var createIterationFromHash = function(hash) {
-
-};
-
-var updateIterationFromHash = function(iteration, hash) {
+var updateIteration = function(iteration, item) {
 
 }
 
@@ -53,10 +67,6 @@ var createIssue = function() {
 
 }
 
-var createIssueFromHash = function(hash) {
-
-}
-
-var updateIssueFromHash = function(issue, hash) {
+var updateIssue = function(issue, item) {
 
 }
