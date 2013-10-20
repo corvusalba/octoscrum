@@ -34,7 +34,7 @@ module Repository
             return projects
         end
 
-        def getFull(repoName, login, token)
+        def getFull(login, token, repoName)
             client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
             children = []
             client.list_milestones(login + '/' + repoName, {:direction => 'desc'}).each do |iter|
@@ -61,6 +61,7 @@ module Repository
                                 status = label.name[7..-1].downcase
                             end
                         end
+                    end
                     children << Issue.new(issue.number, issue.title, issue.body, type, priority, status, -1, -1)
                 end
             end
@@ -110,30 +111,21 @@ module Repository
     end
 
     class IssueRepository
-
-        def initialize(parent, repoInfo, number, title, body, labels)
-            @parent = parent
-            @id = number
-            @repoInfo = repoInfo
-            @title = title
-            @body = body
-            @type = nil
-            @priority = nil
-            @status = nil
-
-            labels.each do |label|
-                if !label.nil?
-                    if label.name.include? 'Type'
-                        @type = label.name[5..-1]
-                    end
-                    if label.name.include? 'Priority'
-                        @priority = label.name[9..-1]
-                    end
-                    if label.name.include? 'Status'
-                        @status = label.name[7..-1]
-                    end
+        def get(login, token, projectID, id)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            issue = client.issue(projectID, id)
+            if !label.nil?
+                if label.name.include? 'Type'
+                    type = label.name[5..-1].downcase
+                end
+                if label.name.include? 'Priority'
+                    priority = label.name[9..-1].downcase
+                end
+                if label.name.include? 'Status'
+                    status = label.name[7..-1].downcase
                 end
             end
+            return Issue.new(issue.number, issue.title, issue.body, type, priority, status, -1, -1)
         end
     end
 end
