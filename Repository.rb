@@ -148,5 +148,19 @@ module Repository
             end
         end
 
+        def update(login, token, projectID, issue)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            labels = []
+            labels << 'Type:' + issue.type.capitalize
+            labels << 'Status:' + issue.status.capitalize
+            labels << 'Priority:' + issue.priority.capitalize
+            if issue.milestone != -1
+                client.create_issue(projectID, issue.id, issue.title, issue.body, options = {labels: => labels, :milestone => issue.milestone})
+            end
+            else
+                client.create_issue(projectID, issue.id, issue.title, issue.body, options = {labels: => labels})
+            end
+        end
+
     end
 end
