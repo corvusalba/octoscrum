@@ -87,8 +87,9 @@ module Repository
             client.create_milestone(projectID, iteration.title, {:description => iteration.description, :due_on => iteration.due_on})
         end
 
-        def updateIteration(iteration, ownerName, repoName)
-            Octokit.update_milestone(ownerName + '/' + repoName, iteration.id, {:title => iteration.due_on, :description => iteration.description, :due_on => iteration.due_on})
+        def update(login, token, projectID, iteration)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)        end
+            client.update_milestone(projectID, iteration.number, {:title => iteration.title, :description => iteration.description, :due_on => iteration.due_on})
         end
 
         def deleteIteration(ownerName, repoName, iteration)
