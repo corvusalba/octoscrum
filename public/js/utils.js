@@ -26,6 +26,10 @@ Array.map = function(handler) {
     return result;
 }
 
+var redirect = function(location) {
+    // TODO Write redirect message;
+}
+
 var getScreenId = function() {
     var uri = window.location.pathname;
     return uri.split["/"].clean("").last;

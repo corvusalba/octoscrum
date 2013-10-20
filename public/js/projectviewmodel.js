@@ -21,12 +21,12 @@ var ProjectViewModel = function() {
     self.onadd = function(data) {
         data.each(function (item) {
             if (item.type() === "iteration") {
-                self.iterations.push(createIterationFromHash(item));
+                self.iterations.push(item);
             }
             if (item.type() === "bug" || item.type() === "feature") {
                 var iteration = self.getIteration(item["id"]);
                 if (iteration != null) {
-                    iteration.children.push(createIssueFromHash(item));
+                    iteration.children.push(item);
                 }
             }
         });
@@ -38,13 +38,13 @@ var ProjectViewModel = function() {
                 var iteration = self.getIteration(item.id());
                 if (iteration != null)
                 {
-                    updateIterationFromHash(iteration, hash)
+                    updateIteration(iteration, item)
                 }
             }
             if (item.type() === "bug" || item.type() == "feature") {
                 var issue = self.getIssue(item.parent(), item.id());
                 if (issue != null) {
-                    updateIssueFromHash(issue, hash);
+                    updateIssue(issue, item);
                 }
             }
         });
@@ -89,19 +89,19 @@ var ProjectViewModel = function() {
         }
     }
 
-    self.addItem(item) {
+    self.addItem = function(item) {
         EventModel.raise("add", "project", getScreenId(), [ item ]);
     }
 
-    self.updateItem(item) {
+    self.updateItem = function(item) {
         EventModel.raise("update", "project", getScreenId(), [ item ]);
     }
 
-    self.removeItem(item) {
+    self.removeItem function(item) {
         EventModel.raise("remove", "project", getScreenId(), [ item ]);
     }
 
-    self.init = function ()
+    self.init = function()
     {
         EventModel.subscribe("project", getScreenId(), self.handle);
     }

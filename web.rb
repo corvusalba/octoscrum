@@ -51,7 +51,8 @@ class WebController < Sinatra::Base
   end
 
   def logout!
-    session[:authenticated] = false
+    #session[:authenticated] = false
+    session.clear
   end
 
   #/projects/{projectid}/{iterationid}
@@ -75,6 +76,7 @@ class WebController < Sinatra::Base
     session[:token] = token
 
     user = GitHubApiWrapper::User.new(login, token)
+    session[:avatarUrl] = 'http://www.gravatar.com/avatar/' + user.getGravatarId()
 
     redirect to('/projects')
   end
