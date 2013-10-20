@@ -112,7 +112,7 @@ module GitHubApiWrapper
 			end
 			return milestones
 			rescue Octokit::ClientError => e
-				puts e
+				# puts e
 			end
 		end
 	end
@@ -179,26 +179,6 @@ module GitHubApiWrapper
 					end
 				end
 			end
-		end
-	end
-
-	class UserStory
-		include Base
-
-		def initialize(parent, repoInfo, number, title, body)
-			@parent = parent
-			@id = number
-			@repoInfo = repoInfo
-			@title = title
-			@body = body
-		end
-
-		def getTitle()
-			return @title
-		end
-
-		def getBody()
-			return @body
 		end
 	end
 
