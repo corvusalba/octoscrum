@@ -42,7 +42,8 @@ module GitHubApiWrapper
 			@user = @client.user
 			@id = @user.id
 			@login = @user.login
-			@children = getProjects			
+			@children = getProjects
+			@type = 'user'
 		end
 
 		public
@@ -88,6 +89,7 @@ module GitHubApiWrapper
 			@repoInfo = repoInfo
 			@parent = user			
 			@children = getIterations()
+			@type = 'project'
 		end
 
 		public
@@ -132,7 +134,8 @@ module GitHubApiWrapper
 			@children.concat getUserStories
 			@children.concat getBugs 
 
-			@issues = getIssues			
+			@issues = getIssues
+			@type = 'iteration'
 		end
 		
 		public
