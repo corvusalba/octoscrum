@@ -6,9 +6,9 @@
     <title>Git Scrumboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/site.css">
     <script src="js/jquery.min.js" type="text/javascript"></script>
-    <script src="js/bootstrap.min.js" type="text/javascript"></script>
     <script src="js/bootstrap.min.js" type="text/javascript"></script>
     <style type="text/css">
       /* Space out content a bit */
@@ -79,24 +79,27 @@
 
   <body>
       <div class="container">
-        <div class="row">
-          <div class="col-md-11">
-            <ol class="breadcrumb">
-              <li>
-                <a href="https://github.com/<%= session[:nickname] %>">
-                  <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
-                  <%= session[:nickname]%>
-                </a>
-              </li>
-              <%= yield_content :breadcrumbs %>
-            </ol>
-          </div>
-          <div class="col-md-1">
-            <% if session[:authenticated] %>
-              <a href="/auth/signout" class="btn btn-default pull-right">Sign Out</a>
-            <% end %>
-          </div>
-        </div>
+
+          <% if session[:authenticated] %>
+              <div class="row">
+                <div class="col-md-12">
+                  <a href="/auth/signout" class="pull-right">
+                    <i class="icon-signout">sign out</i>
+                  </a>
+                </div>
+              </div>
+          <% end %>
+
+          <ol class="breadcrumb">
+            <li>
+              <a href="/projects">
+                <img src="https://app.divshot.com/img/placeholder-100x100.gif" height="32" width="32">
+                <%= session[:nickname]%>
+              </a>
+            </li>
+            <%= yield_content :breadcrumbs %>
+          </ol>
+
         <%= yield %>
 
         <div class="footer">
