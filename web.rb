@@ -4,7 +4,7 @@ require 'sinatra/content_for'
 require 'omniauth'
 require 'omniauth-github'
 
-require './GitHubApiWrapper.rb'
+require './Repository.rb'
 
 class WebController < Sinatra::Base
 
@@ -75,8 +75,8 @@ class WebController < Sinatra::Base
     session[:login] = login
     session[:token] = token
 
-    user = GitHubApiWrapper::User.new(login, token)
-    session[:avatarUrl] = 'http://www.gravatar.com/avatar/' + user.getGravatarId()
+    user = Repository::UserRepository.new()
+    session[:avatarUrl] = 'http://www.gravatar.com/avatar/' + user.getGravatarId(login, token)
 
     redirect to('/projects')
   end
