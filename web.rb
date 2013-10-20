@@ -71,10 +71,10 @@ class WebController < Sinatra::Base
     login = env['omniauth.auth']['info']['nickname']
     session[:authenticated] = true
 
-    session[:nickname] = login
+    session[:login] = login
     session[:token] = token
 
-    @user = GitHubApiWrapper::User.new(login, token)
+    user = GitHubApiWrapper::User.new(login, token)
 
     redirect to('/projects')
   end
