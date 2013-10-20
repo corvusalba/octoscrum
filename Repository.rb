@@ -125,7 +125,28 @@ module Repository
                     status = label.name[7..-1].downcase
                 end
             end
-            return Issue.new(issue.number, issue.title, issue.body, type, priority, status, -1, -1)
+            if issue.milestone?
+                milestone = issue.milestone
+            end
+            else
+                milestone = -1
+            end
+            return Issue.new(issue.number, issue.title, issue.body, type, priority, status, milestone, -1)
         end
+
+        def add(login, token, projectID, issue)
+            client = Octokit::Client.new(:login => login, :oauth_token => token, :access_token => token)
+            labels = []
+            labels << 'Type:' + issue.type.capitalize
+            labels << 'Status:' + issue.status.capitalize
+            labels << 'Priority:' + issue.priority.capitalize
+            if issue.milestone != -1
+                client.create_issue(projectID, issue.title, issue.body, options = {labels: => labels, :milestone => issue.milestone})
+            end
+            else
+                client.create_issue(projectID, issue.title, issue.body, options = {labels: => labels})
+            end
+        end
+
     end
 end
