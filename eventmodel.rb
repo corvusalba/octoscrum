@@ -10,8 +10,12 @@ module EventModel
     attr_reader :screenType
     attr_reader :screenId
     attr_reader :data
+    attr_reader :login
+    attr_reader :token
 
     def initialize(eventType, screenType, screenId, data)
+      @login = nil
+      @token = nil
       @eventType = eventType
       @screenType = screenType
       @screenId = screenId
