@@ -20,12 +20,22 @@ module GitHubApiWrapper
             @user = @client.user
             @id = @user.id
             @login = @user.login
+            @gravatarId = @user.gravatar_id
             puts '- Creating user ' + @login
             @projects = getProjects()
             @orgProjects = getOrgProjects()
             @children = getChildren()
             @type = 'user'
             puts '- User created ' + @login
+        end
+
+        public
+        def getGravatarId
+          @gravatarId
+        end
+
+        def octoUser
+          @user
         end
 
         private 
