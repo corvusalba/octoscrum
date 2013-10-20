@@ -1,0 +1,6 @@
+<h3>Big brother is watching you, <%= session[:username] %>!</h3>
+<ul>
+  <li>UID: <%= session[:uid] %></li>
+  <li>Token: <%= session[:token] %></li>
+</ul>
+<a href="/auth/signout">Logout</a>

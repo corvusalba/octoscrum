@@ -6,7 +6,6 @@ port: 8080
 timeout: 30
 log: /home/www-data/log/thin.log
 pid: /home/www-data/pid/thin.pid
-socket: /home/www-data/tmp/thin.sock
 max_conns: 1024
 max_persistent_conns: 512
 require: []
